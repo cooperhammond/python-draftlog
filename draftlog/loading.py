@@ -64,6 +64,9 @@ class Loading(threading.Thread):
         # cyan = 36; purple = 35; blue = 34; green = 32; yewllow = 33; red = 31
         self.frames = ["\x1b[" + str(n) + "m\x1b[1m" + s + "\x1b[0m" for s in load.frames]
 
+
+# TODO: Make `log` accept with a %s in it so that the frame can be parsed in.
+
     def log(self, text):
         self.text_queue.put(text)
 
@@ -71,7 +74,8 @@ class Loading(threading.Thread):
         if text == None: text = self.text
         self.text_queue.put("quit")
         sys.stdout.write("\x1b[2K")
-        print (self.frames[-1] + " " + text)
+        print (text % self.frames[-1])
+        self.join()
 
     def run(self):
         while True:
@@ -81,13 +85,15 @@ class Loading(threading.Thread):
             if self.text == "quit":
                 break
 
-            if self.frame > len(self.frames) - 2:
-                self.frame = 0
-            sys.stdout.write(self.frames[self.frame] + " ")
-            print (self.text)
-            self.t.move_up()
-            time.sleep(self.time)
-            self.frame += 1
+            if self.text:
+                if self.frame > len(self.frames) - 2:
+                    self.frame = 0
+                print (self.text % self.frames[self.frame])
+                #sys.stdout.write(self.frames[self.frame] + " ")
+                #print (self.text)
+                self.t.move_up()
+                time.sleep(self.time)
+                self.frame += 1
 
 
 #import urllib2
@@ -96,11 +102,9 @@ load = Loading()
 load.color_frames(36)
 load.start()
 
-load.log('Pinging "https://google.com"')
+load.log('%s Pinging "https://google.com"')
 #urllib2.urlopen("https://google.com")
 time.sleep(3)
-load.log("Parsing results")
+load.log("%s Parsing results")
 time.sleep(3)
-load.end("Done pinging!")
-
-load.join
+load.end("%s Done pinging!")
