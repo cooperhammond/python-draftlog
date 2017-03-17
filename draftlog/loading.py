@@ -1,0 +1,106 @@
+# -*- coding: UTF-8 -*-
+
+from colorconsole.terminal import get_terminal
+import time
+import sys
+import threading
+if sys.version_info[0] <= 2:
+    import Queue as queue
+else:
+    import queue
+
+class Loading(threading.Thread):
+    def __init__(self, frames=None):
+        # Frames takes each frame seperated by a space with the very last frame
+        # being the "done" frame.
+
+        # Initialize self into a threading object and start running it.
+        super(Loading, self).__init__()
+        self.text_queue = queue.Queue()
+        self.setDaemon(True)
+
+        # Internal variables
+        if frames == None:
+            self.change_frames("snake")
+        else:
+            self.frames = frames.split(" ")
+            self.time = 0.03
+        self.t = get_terminal()
+        self.text = ""
+        self.frame = 0
+
+    def change_frames(self, key):
+        # Valid types: dots, circles
+        switch = {
+            "snake":    ("⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠿", 0.03),
+            "fatsnake": ("⣾ ⣽ ⣻ ⢿ ⡿ ⣟ ⣯ ⣷ ⣿", 0.1),
+            "drumming": ("⠋ ⠙ ⠚ ⠞ ⠖ ⠦ ⠴ ⠲ ⠳ ⠓ ⠿", 0.03),
+            "pouring":  ("⠄ ⠆ ⠇ ⠋ ⠙ ⠸ ⠰ ⠠ ⠰ ⠸ ⠙ ⠋ ⠇ ⠆ ⠿", 0.05),
+            "curls":    ("⠋ ⠙ ⠚ ⠒ ⠂ ⠂ ⠒ ⠲ ⠴ ⠦ ⠖ ⠒ ⠐ ⠐ ⠒ ⠓ ⠋ ⠿", 0.05),
+            "jumping":  ("⢄ ⢂ ⢁ ⡁ ⡈ ⡐ ⡠ ⠿", 0.05),
+            "flash":     ("◯ ◉ ● ◉ ●", 0.2),
+            "circles":  ("◜ ◠ ◝ ◞ ◡ ◟ ◯", 0.1),
+            "bars":     ("▁ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃ █", 0.1),
+            "wheel":    ("| / - \\ |", 0.3),
+            "pulse":    ("▉ ▊ ▋ ▌ ▍ ▎ ▏ ▎ ▍ ▌ ▋ ▊ ▉", 0.03),
+            "arrows":   ("← ↖ ↑ ↗ → ↘ ↓ ↙ ↑", 0.1),
+            "pipes":    ("┤ ┘ ┴ └ ├ ┌ ┬ ┐ ─", 0.1),
+            "grow":     (". o O ° O o O", 0.1),
+            "evolve":   (". o O @ * @ O o *", 0.1),
+            "eyes":     ("◡◡ ⊙⊙ ◠◠ ⊙⊙ ⊙⊙", 0.3),
+            "trigram":  ("☰ ☱ ☳ ☷ ☶ ☴ ☰ ☰ ☰", 0.1),
+            "sphere":   ("🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘 🌑", 0.1),
+            "dot":      ("⠁ ⠂ ⠄ ⡀ ⢀ ⠠ ⠐ ⠈ .", 0.05)
+        }
+
+        if switch.get(key) == None:
+            raise KeyError("Not a valid type. Must be of type: %s" % switch.keys())
+        else:
+            self.frames, self.time = switch.get(key)
+            self.frames = self.frames.split(" ")
+
+
+    def color_frames(self, n):
+        # cyan = 36; purple = 35; blue = 34; green = 32; yewllow = 33; red = 31
+        self.frames = ["\x1b[" + str(n) + "m\x1b[1m" + s + "\x1b[0m" for s in load.frames]
+
+    def log(self, text):
+        self.text_queue.put(text)
+
+    def end(self, text=None):
+        if text == None: text = self.text
+        self.text_queue.put("quit")
+        sys.stdout.write("\x1b[2K")
+        print (self.frames[-1] + " " + text)
+
+    def run(self):
+        while True:
+            if not self.text_queue.empty():
+                self.text = self.text_queue.get()
+                sys.stdout.write("\x1b[2K")
+            if self.text == "quit":
+                break
+
+            if self.frame > len(self.frames) - 2:
+                self.frame = 0
+            sys.stdout.write(self.frames[self.frame] + " ")
+            print (self.text)
+            self.t.move_up()
+            time.sleep(self.time)
+            self.frame += 1
+
+
+#import urllib2
+
+load = Loading()
+load.color_frames(36)
+load.start()
+
+load.log('Pinging "https://google.com"')
+#urllib2.urlopen("https://google.com")
+time.sleep(3)
+load.log("Parsing results")
+time.sleep(3)
+load.end("Done pinging!")
+
+load.join
