@@ -10,6 +10,6 @@ setup(
     license =      'GPL',
     packages =     ['draftlog'],
     install_requires= [
-        'colorconsole',
+        # NONE!! I'm so happy!
     ],
 )

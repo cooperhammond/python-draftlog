@@ -28,10 +28,11 @@ class Loading(threading.Thread):
         self.t = get_terminal()
         self.text = ""
         self.frame = 0
+        sys.stdout.write("\x1b[7")
 
     def change_frames(self, key):
         # Valid types: dots, circles
-        switch = {
+        frames = {
             "snake":    ("⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠿", 0.03),
             "fatsnake": ("⣾ ⣽ ⣻ ⢿ ⡿ ⣟ ⣯ ⣷ ⣿", 0.1),
             "drumming": ("⠋ ⠙ ⠚ ⠞ ⠖ ⠦ ⠴ ⠲ ⠳ ⠓ ⠿", 0.03),
@@ -53,44 +54,48 @@ class Loading(threading.Thread):
             "dot":      ("⠁ ⠂ ⠄ ⡀ ⢀ ⠠ ⠐ ⠈ .", 0.05)
         }
 
-        if switch.get(key) == None:
+        if frames.get(key) == None:
             raise KeyError("Not a valid type. Must be of type: %s" % switch.keys())
         else:
-            self.frames, self.time = switch.get(key)
+            self.frames, self.time = frames.get(key)
             self.frames = self.frames.split(" ")
 
+    def write_text(self, frame=None, text=None):
+        if not frame: frame = self.frame
+        if not text:  text  = self.text
+        sys.stdout.write("\x1b[8")
+        print (text.replace("%s", "{0}").format(self.frames[frame]))
 
     def color_frames(self, n):
-        # cyan = 36; purple = 35; blue = 34; green = 32; yewllow = 33; red = 31
+        # cyan = 36; purple = 35; blue = 34; green = 32; yellow = 33; red = 31
         self.frames = ["\x1b[" + str(n) + "m\x1b[1m" + s + "\x1b[0m" for s in self.frames]
 
     def log(self, text):
-        self.text_queue.put(text.replace("%s", "{0}"))
+        self.text_queue.put(text)
 
     def end(self, text=None):
         if text == None: text = self.text
         self.text_queue.put("quit")
-        sys.stdout.write("\x1b[2K")
-        print (text.replace("%s", "{0}").format(self.frames[-1]))
+        self.write_text(frame=-1, text=text)
         self.join()
 
     def run(self):
         while True:
             if not self.text_queue.empty():
                 self.text = self.text_queue.get()
-                sys.stdout.write("\x1b[2K")
             if self.text == "quit":
                 break
 
             if self.text:
                 if self.frame > len(self.frames) - 2:
                     self.frame = 0
-                print (self.text.format(self.frames[self.frame]))
-                #sys.stdout.write(self.frames[self.frame] + " ")
-                #print (self.text)
+                self.write_text()
                 self.t.move_up()
                 time.sleep(self.time)
                 self.frame += 1
+
+# TODO: Make it so that it can still run even if the main loop is printing to
+# another line. (eg: remember the location of the line-to-write)
 
 l = Loading()
 l.start()
@@ -102,4 +107,3 @@ l.color_frames(36)
 l.log("%s" + "Still loading".center(20) + "%s")
 time.sleep(3)
 l.end("%s" + "Done Loading".center(20) + "%s")
-
