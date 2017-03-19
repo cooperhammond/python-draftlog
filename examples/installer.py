@@ -17,19 +17,21 @@ class MockInstall:
         self.step = 0
         self.count = 0
         self.wait = wait
+        self.status = True
     def interval(self):
         self.count += 1
         if self.count >= self.wait:
             if self.step > len(self.steps) - 2:
-                return install_progress(self.package, self.steps[self.step], finished=True), False
+                self.status = False
+                return install_progress(self.package, self.steps[self.step], finished=True)
             self.step += 1
-            return install_progress(self.package, self.steps[self.step]), True
+            return install_progress(self.package, self.steps[self.step])
         else:
-            return "", True
+            return ""
 
 class Loader:
     def __init__(self, text, status=True):
-        self.frames = "⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠿".split(" ")
+        self.frames = "⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏".split(" ")
         self.frame = -1
         self.status = status
         self.text = text
@@ -37,7 +39,7 @@ class Loader:
         if self.frame > len(self.frames) - 2:
             self.frame = -1
         self.frame += 1
-        return ("{0} " + self.text + " {0}").format(self.frames[self.frame]), self.status
+        return ("{0} " + self.text + " {0}").format(self.frames[self.frame])
 
 
 packages = ["irs", "bobloblaw", "youtube-dl", "truffleHog", "numpy", "scipy"]

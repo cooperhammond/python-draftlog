@@ -4,12 +4,13 @@ class Banner:
     def __init__(self, text):
         self.text = text
         self.shift = 0
+        self.status = True
     def interval(self):
         self.shift += 1
-        if self.shift >= 50:
-            return self.text, False
+        if self.shift >= 25:
+            self.status = False
         self.text = self.text[1:] + self.text[0]
-        return self.text, True
+        return self.text
 
 string = "  Wow! Banners!     This is so cool!     All in 15 lines with `draftlog`!   "
 

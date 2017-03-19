@@ -9,11 +9,12 @@ def progress_bar(progress):
 class Download:
     def __init__(self):
         self.progress = 0
+        self.status = True
     def interval(self):
         self.progress += randrange(1, 5)
         if self.progress >= 100:
-            return progress_bar(100), False
-        return progress_bar(self.progress), True
+            self.status = False
+        return progress_bar(self.progress)
 
 d = Draft()
 d.add_text("Starting Downloads...")

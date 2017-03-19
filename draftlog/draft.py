@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 import time, sys
 from ansi import *
+import random
 
 if sys.version_info[0] >= 3:
     import io
@@ -18,12 +19,30 @@ def lcm(a, b):
     return a * b // gcd(a, b)
 
 
+ids = []
+def gen_id():
+    global ids
+    id = random.random()
+    if id not in ids:
+        ids.append(id)
+        return id
+    else:
+        return gen_id()
+
 class TmpInterval:
     def __init__(self, text, status=True):
         self.text = text
+        self.tmp_text = text
         self.status = status
+        self.init_time = time.time()
+        self.time_reach = 0
     def interval(self):
-        return self.text, self.status
+        if time.time() > self.time_reach + (self.time_reach - self.init_time):
+            self.text = self.tmp_text
+        return self.text
+    def update_after(self, text, time_):
+        self.tmp_text = text
+        self.time_reach = time.time() + time_
 
 class Draft:
     def __init__(self):
@@ -54,30 +73,44 @@ class Draft:
         initialized.
         `n`     : how often it should be updated.
         """
+        id = gen_id()
         self.intervals.append({
             "class": class_,
             "time": n,
-            "status": True
+            "status": True,
+            "id": id,
         })
+        return
 
     def add_loader(self, class_, n):
         """
         Pretty much the same as `add_interval`, but finishes when the rest do
         rather than on its own time.
         """
+        id = gen_id()
         self.intervals.append({
             "class": class_,
             "time": n,
-            "status": None
+            "status": None,
+            "id": id
         })
+        return id
 
     def add_text(self, text, n=0.01):
         """ A really hacky `loader` pretty much. (look up)"""
+        id = gen_id()
         self.intervals.append({
             "class": TmpInterval(text, status=None),
             "time": n,
-            "status": None
+            "status": None,
+            "id": id
         })
+        return id
+
+    def id_interval(self, id):
+        for interval in self.intervals:
+            if interval["id"] == id:
+                return interval["class"]
 
     def sort_intervals(self):
         """
@@ -92,14 +125,16 @@ class Draft:
         for interval in self.intervals:
             interval["increment_counter"] = int(round(interval["time"] / self.time_interval))
             interval["backup"] = ""
+            if "id" not in interval:
+                interval["id"] = gen_id()
 
     def parse_interval(self, interval):
         if interval["status"] == False:
             return interval["backup"], False
         elif interval["status"] == None:
-            return interval["class"].interval()
+            return interval["class"].interval(), interval["class"].status
         elif self.counter % interval["increment_counter"] == 0:
-            return interval["class"].interval()
+            return interval["class"].interval(), interval["class"].status
         else:
             return interval["backup"], True
 
