@@ -8,7 +8,7 @@ elif sys.version_info[0] == 2:
     import StringIO as io
 
 class Loader:
-    def __init__(self, text):
+    def __init__(self, text, status=True):
         self.frames = "⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠿".split(" ")
         self.frame = -1
         self.text = text
@@ -31,6 +31,7 @@ class TmpInterval:
 class Draft:
     def __init__(self):
         self.intervals = []
+        self.counter = -1
         self.time_interval = 0
 
     def capture(self):
@@ -56,53 +57,75 @@ class Draft:
         initialized.
         `n`     : how often it should be updated.
         """
-        self.intervals.append([class_, n]) # TODO: Implement the time to do something.
+        self.intervals.append({
+            "class": class_,
+            "time": n,
+            "status": True
+        })
+
+    def add_loader(self, class_, n):
+        """
+        Pretty much the same as `add_interval`, but finishes when the rest do
+        rather than on its own time.
+        """
+        self.intervals.append({
+            "class": class_,
+            "time": n,
+            "status": None
+        })
+
+    def sort_intervals(self):
+        """
+        Note that this doesn't actually sort anything, it just adds a 4 element
+        so that there is an average for how much something is called so that
+        times aren't useless.
+        """
+        smallest = lambda x: x["time"]
+        sort = sorted(self.intervals, key=smallest)
+        smallest_interval = min(sort, key=smallest)
+        self.time_interval = smallest_interval["time"]
+        for interval in self.intervals:
+            interval["increment_counter"] = round(interval["time"] / self.time_interval)
+            interval["backup"] = ""
+
+    def parse_interval(self, interval):
+        if interval["status"] == False:
+            return interval["backup"], False
+        elif interval["status"] == None:
+            return interval["class"].interval()
+        elif self.counter % interval["increment_counter"] == 0:
+            return interval["class"].interval()
+        else:
+            return interval["backup"], True
 
     def generate_frame(self):
         """ Generates a single frame of the log. """
         self.capture() # Begin capturing each interval.
-        for index, interval_ in enumerate(self.intervals):
-            t, check = interval_[0].interval()
-            if check == False:
-                self.intervals[index] = [TmpInterval(t), interval_[1]]
+        for interval in self.intervals:
+            t, check = self.parse_interval(interval)
+            if check == False and interval["status"] != False:
+                interval["status"] = False
 
-            # To check that it isn't `None or False`, because it would still print it
             if t:
+                self.counter += 1
+                interval["backup"] = t
                 sys.stdout.write(clearline)
                 print (t)
 
         return self.get_capture() # Return the captured intervals.
 
     def check_done(self):
-        """ Checks if all of `self.intervals[x][0]` is a `TmpInterval`"""
-        return all(isinstance(x[0], TmpInterval) for x in self.intervals)
+        """ Checks if all of `self.intervals[x]["status"]` is a `bad bool`"""
+        return all(x["status"] in (False, None) for x in self.intervals)
 
     def start(self):
         """ Runs the program until `check_done()` returns `True`"""
+        self.sort_intervals()
+        lines = 0
         while self.check_done() == False:
             frame = self.generate_frame()
             lines = len(frame.split("\n"))
             print (frame)
             up(lines)
-            time.sleep(0.03)
+            time.sleep(self.time_interval)
         down(lines - 1)
-
-class Load:
-    def __init__(self, text):
-        self.text = text
-        self.num = 0
-    def interval(self):
-        check = True
-        if self.num >= 12:
-            check = False
-        self.num += 1
-
-        return self.text, check
-
-d = Draft()
-
-d.add_interval(Loader("Loading"), 0.05)
-d.add_interval(Load("Wow another!"), 0.5)
-
-
-d.start()

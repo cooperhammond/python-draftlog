@@ -10,6 +10,6 @@ setup(
     license =      'GPL',
     packages =     ['draftlog'],
     install_requires= [
-        # NONE!! I'm so happy!
+        # Notice that there is nothing here. :D-|-<
     ],
 )

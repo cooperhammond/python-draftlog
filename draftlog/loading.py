@@ -94,9 +94,6 @@ class Loading(threading.Thread):
                 time.sleep(self.time)
                 self.frame += 1
 
-# TODO: Make it so that it can still run even if the main loop is printing to
-# another line. (eg: remember the location of the line-to-write)
-
 l = Loading()
 l.start()
 l.color_frames(36)
