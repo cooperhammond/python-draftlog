@@ -7,26 +7,23 @@ if sys.version_info[0] >= 3:
 elif sys.version_info[0] == 2:
     import StringIO as io
 
-class Loader:
-    def __init__(self, text, status=True):
-        self.frames = "⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏ ⠿".split(" ")
-        self.frame = -1
-        self.text = text
-    def interval(self):
-        if self.frame > len(self.frames) - 3:
-            self.frame = -2
-            check = False
-        else:
-            check = True
-        self.frame += 1
-        return ("{0} " + self.text + " {0}").format(self.frames[self.frame]), check
+def gcd(a, b):
+    """Return greatest common divisor using Euclid's Algorithm."""
+    while b:
+        a, b = b, a % b
+    return a
+
+def lcm(a, b):
+    """Return lowest common multiple."""
+    return a * b // gcd(a, b)
 
 
 class TmpInterval:
-    def __init__(self, text):
+    def __init__(self, text, status=True):
         self.text = text
+        self.status = status
     def interval(self):
-        return self.text, True
+        return self.text, self.status
 
 class Draft:
     def __init__(self):
@@ -74,6 +71,14 @@ class Draft:
             "status": None
         })
 
+    def add_text(self, text, n=0.01):
+        """ A really hacky `loader` pretty much. (look up)"""
+        self.intervals.append({
+            "class": TmpInterval(text, status=None),
+            "time": n,
+            "status": None
+        })
+
     def sort_intervals(self):
         """
         Note that this doesn't actually sort anything, it just adds a 4 element
@@ -82,10 +87,10 @@ class Draft:
         """
         smallest = lambda x: x["time"]
         sort = sorted(self.intervals, key=smallest)
-        smallest_interval = min(sort, key=smallest)
-        self.time_interval = smallest_interval["time"]
+        self.smallest_interval = min(sort, key=smallest)
+        self.time_interval = self.smallest_interval["time"]
         for interval in self.intervals:
-            interval["increment_counter"] = round(interval["time"] / self.time_interval)
+            interval["increment_counter"] = int(round(interval["time"] / self.time_interval))
             interval["backup"] = ""
 
     def parse_interval(self, interval):
@@ -107,7 +112,6 @@ class Draft:
                 interval["status"] = False
 
             if t:
-                self.counter += 1
                 interval["backup"] = t
                 sys.stdout.write(clearline)
                 print (t)
@@ -123,6 +127,7 @@ class Draft:
         self.sort_intervals()
         lines = 0
         while self.check_done() == False:
+            self.counter += 1
             frame = self.generate_frame()
             lines = len(frame.split("\n"))
             print (frame)
