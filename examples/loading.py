@@ -2,10 +2,9 @@
 from draftlog.draft import Draft
 
 class Loader:
-    def __init__(self, text, status=True):
+    def __init__(self, text):
         self.frames = "⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏".split(" ")
         self.frame = -1
-        self.status = status
         self.text = text
     def interval(self):
         if self.frame > len(self.frames) - 2:

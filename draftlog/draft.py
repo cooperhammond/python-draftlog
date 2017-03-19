@@ -32,17 +32,26 @@ def gen_id():
 class TmpInterval:
     def __init__(self, text, status=True):
         self.text = text
-        self.tmp_text = text
+        self.tmp_data = {}
+        self.tmp_data["text"] = text
         self.status = status
         self.init_time = time.time()
         self.time_reach = 0
     def interval(self):
         if time.time() > self.time_reach + (self.time_reach - self.init_time):
-            self.text = self.tmp_text
+            if "text" in self.tmp_data:
+                self.text = self.tmp_data["text"]
+            if "status" in self.tmp_data:
+                self.status = self.tmp_data["status"]
+
         return self.text
-    def update_after(self, text, time_):
-        self.tmp_text = text
-        self.time_reach = time.time() + time_
+
+    def update(self, val, text):
+        self.tmp_data[val] = text
+        return self
+    def after(self, _time):
+        self.time_reach = time.time() + _time
+        return self
 
 class Draft:
     def __init__(self):
@@ -80,7 +89,7 @@ class Draft:
             "status": True,
             "id": id,
         })
-        return
+        return self.id_interval(id)
 
     def add_loader(self, class_, n):
         """
@@ -94,18 +103,18 @@ class Draft:
             "status": None,
             "id": id
         })
-        return id
+        return self.id_interval(id)
 
-    def add_text(self, text, n=0.01):
-        """ A really hacky `loader` pretty much. (look up)"""
+    def add_text(self, text, n=0.01, status=None):
+        """ A really hacky `add_loader` pretty much. (look up)"""
         id = gen_id()
         self.intervals.append({
-            "class": TmpInterval(text, status=None),
+            "class": TmpInterval(text, status=status),
             "time": n,
-            "status": None,
+            "status": status,
             "id": id
         })
-        return id
+        return self.id_interval(id)
 
     def id_interval(self, id):
         for interval in self.intervals:
@@ -132,7 +141,7 @@ class Draft:
         if interval["status"] == False:
             return interval["backup"], False
         elif interval["status"] == None:
-            return interval["class"].interval(), interval["class"].status
+            return interval["class"].interval(), None
         elif self.counter % interval["increment_counter"] == 0:
             return interval["class"].interval(), interval["class"].status
         else:

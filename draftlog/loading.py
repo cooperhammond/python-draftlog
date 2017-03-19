@@ -55,7 +55,7 @@ class Loading(threading.Thread):
         }
 
         if frames.get(key) == None:
-            raise KeyError("Not a valid type. Must be of type: %s" % switch.keys())
+            raise KeyError("Not a valid type. Must be of type: %s" % frames.keys())
         else:
             self.frames, self.time = frames.get(key)
             self.frames = self.frames.split(" ")
@@ -99,7 +99,7 @@ l.start()
 l.color_frames(36)
 l.log("%s" + "Loading THE THING".center(20) + "%s")
 time.sleep(3)
-l.change_frames("pouring")
+l.change_frames(sys.argv[1])
 l.color_frames(36)
 l.log("%s" + "Still loading".center(20) + "%s")
 time.sleep(3)
