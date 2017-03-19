@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 import time, sys
-from ansi import *
+from .ansi import *
 import random
 
 if sys.version_info[0] >= 3:

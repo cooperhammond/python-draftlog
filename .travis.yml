@@ -1,0 +1,15 @@
+language: python
+python:
+  - "2.7"
+  - "3.5"
+
+install:
+  - pip install coveralls # For coveralls.io
+  - pip install nose
+
+script:
+  - python setup.py install
+  - python examples/test_all.py
+
+after_success:
+  - coveralls

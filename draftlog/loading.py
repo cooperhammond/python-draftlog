@@ -94,6 +94,7 @@ class Loading(threading.Thread):
                 time.sleep(self.time)
                 self.frame += 1
 
+"""
 l = Loading()
 l.start()
 l.color_frames(36)
@@ -104,3 +105,4 @@ l.color_frames(36)
 l.log("%s" + "Still loading".center(20) + "%s")
 time.sleep(3)
 l.end("%s" + "Done Loading".center(20) + "%s")
+"""
