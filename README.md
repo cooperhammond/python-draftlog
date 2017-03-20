@@ -48,3 +48,7 @@ d.start()
 ```
 
 For a more in-depth view of the module, look to the [wiki](https://github.com/kepoorhampond/python-draftlog/wiki). If you still have questions, email me at `kepoorh@gmail.com`, all questions are appreciated!
+## Support on Beerpay
+Hey dude! Help me out for a couple of :beers:!
+
+[![Beerpay](https://beerpay.io/kepoorhampond/python-draftlog/badge.svg?style=beer-square)](https://beerpay.io/kepoorhampond/python-draftlog)  [![Beerpay](https://beerpay.io/kepoorhampond/python-draftlog/make-wish.svg?style=flat-square)](https://beerpay.io/kepoorhampond/python-draftlog?focus=wish)
