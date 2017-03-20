@@ -3,7 +3,12 @@
 
 [![demo](http://i.imgur.com/nMqj7Rr.gif)](http://i.imgur.com/nMqj7Rr.gif)
 
-A module that is useful for CLI's, logs and pretty much any cool multi-line python tool.
+[![License: GNU](https://img.shields.io/badge/license-gnu-yellow.svg?style=flat-square)](http://www.gnu.org/licenses/gpl.html)
+[![Build Status](https://img.shields.io/travis/kepoorhampond/python-draftlog/master.svg?style=flat-square)](https://travis-ci.org/kepoorhampond/python-draftlog)
+[![PyPI](https://img.shields.io/badge/pypi-draftlog-blue.svg?style=flat-square)](https://pypi.python.org/pypi/draftlog)
+[![Say Thanks](https://img.shields.io/badge/say-thanks-ff69b4.svg?style=flat-square)](https://saythanks.io/to/kepoorhampond)
+
+A module useful for CLI's, logs and pretty much any cool multi-line python tool.
 
 All inspiration goes to [Ivan Seidel](https://github.com/ivanseidel) with [`node-draftlog`](https://github.com/ivanseidel/node-draftlog).
 
@@ -14,7 +19,7 @@ Works with Python 2 and 3.
 $ pip install draftlog
 ```
 
-## Examples
+## Intro Example
 Here's an average unexciting example of `draftlog`, if you want some more exciting ones, check out the [`examples`](https://github.com/kepoorhampond/python-draftlog/tree/master/examples) folder!
 ```python
 # Import the module
@@ -47,8 +52,10 @@ t.update("text", "*more jeopardy music*").after(0.75)
 d.start()
 ```
 
-For a more in-depth view of the module, look to the [wiki](https://github.com/kepoorhampond/python-draftlog/wiki). If you still have questions, email me at `kepoorh@gmail.com`, all questions are appreciated!
-## Support on Beerpay
-Hey dude! Help me out for a couple of :beers:!
+## How does it do like it does?
+It generates frames based off of the `intervals` you add and overwrites them on a generated time basis with ANSI escape codes! Since it's very open, you can make practically anything with it! In the [`examples`](https://github.com/kepoorhampond/python-draftlog/tree/master/examples) folder I've already made a banner, a multi-line progress bar, and more! 
 
-[![Beerpay](https://beerpay.io/kepoorhampond/python-draftlog/badge.svg?style=beer-square)](https://beerpay.io/kepoorhampond/python-draftlog)  [![Beerpay](https://beerpay.io/kepoorhampond/python-draftlog/make-wish.svg?style=flat-square)](https://beerpay.io/kepoorhampond/python-draftlog?focus=wish)
+For a more in-depth view of the module, look to the [wiki](https://github.com/kepoorhampond/python-draftlog/wiki).
+
+## Have questions?
+If you still have questions or need some help, email me at `kepoorh@gmail.com`, all feedback is appreciated!
