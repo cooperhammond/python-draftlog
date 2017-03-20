@@ -22,38 +22,46 @@ $ pip install draftlog
 ## Intro Example
 Here's an average unexciting example of `draftlog`, if you want some more exciting ones, check out the [`examples`](https://github.com/kepoorhampond/python-draftlog/tree/master/examples) folder!
 ```python
+# -*- coding: UTF-8 -*-
 # Import the module
 from draftlog.draft import Draft
 
-# Make your "interval" object.
-class UpdatableText:
-    def __init__(self, texts):
-        self.counter = -1
-        self.texts = texts
-        self.status = True
+# Make a loader interval class:
+class Loader:
+    def __init__(self, text):
+        self.frames = "⢄ ⢂ ⢁ ⡁ ⡈ ⡐ ⡠".split(" ")
+        self.frame = -1
+        self.text = text
     def interval(self):
-        self.counter += 1
-        if self.counter > len(self.texts) - 1:
+        if self.frame > len(self.frames) - 2:
+            self.frame = -1
+        self.frame += 1
+        return ("{0} " + self.text + " {0}").format(self.frames[self.frame])
+
+# Make an interval class
+class Clock:
+    def __init__(self, timeout):
+        self.timeout = timeout
+        self.status = True # essential variable `status`
+        self.time = 0
+    def interval(self): # and the `interval` function.
+        self.time += 1
+        if self.time >= self.timeout:
             self.status = False
-            self.counter = -1
+        return (" " * 6) + str(self.time)
 
-        return self.texts[self.counter]
-texts = ["Loading ...", "Still Loading ...", "Even more loading!", "GAH! When will it end?!"]
-
-# Initialize a `Draft` object...
+# Initialize the draft
 d = Draft()
-# Add your interval object...
-d.add_interval(UpdatableText(texts), 1)
-# Add some fancy text
-t = d.add_text("*jeopardy music*")
-# Update the fancy text after 3/4 of a second
-t.update("text", "*more jeopardy music*").after(0.75)
-# And start it!
+# Add the loader
+d.add_loader(Loader("Tick Tock"), 0.05)
+# Add the interval clock
+d.add_interval(Clock(10), 1)
+# Start it!
 d.start()
 ```
 
 ## How does it do like it does?
-It generates frames based off of the `intervals` you add and overwrites them on a generated time basis with ANSI escape codes! Since it's very open, you can make practically anything with it! In the [`examples`](https://github.com/kepoorhampond/python-draftlog/tree/master/examples) folder I've already made a banner, a multi-line progress bar, and more! 
+It generates frames based off of the `intervals` you add and overwrites them on a generated time basis with ANSI escape codes! Since it's very open, you can make practically anything with it! In the [`examples`](https://github.com/kepoorhampond/python-draftlog/tree/master/examples) folder I've already made a banner, a multi-line progress bar, and more!
 
 For a more in-depth view of the module, look to the [wiki](https://github.com/kepoorhampond/python-draftlog/wiki).
 
