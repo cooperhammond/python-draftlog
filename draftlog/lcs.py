@@ -18,9 +18,9 @@ class LineCountStream(object):
             self.count_lines(data)
         self.stdout.write(data)
 
-    def log(self):
+    def log(self, text=""):
         r = LogDraft()
-        print ("")
+        print (text)
         return r
 
     def flush(self):

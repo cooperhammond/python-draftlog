@@ -42,7 +42,7 @@ class MockInstall:
             self.step += 1
             return install_progress(self.package, self.steps[self.step])
         else:
-            return ""
+            return " "
 
 
 packages = ["irs", "bobloblaw", "youtube-dl", "truffleHog", "numpy", "scipy"]
@@ -50,10 +50,11 @@ load = Loader("Installing Packages")
 
 load_draft = draft.log()
 
-load_draft.set_interval(load.interval, 0.03, daemon=True)
+load_draft.set_interval(load.interval, 0.05, daemon=True)
 
 for i, package in enumerate(packages):
-    draft.log().set_interval(
+    pack = draft.log()
+    pack.set_interval(
         MockInstall(package, wait=i).interval,
         round(float(randrange(25, 150) / 100.0), 1)
     )
