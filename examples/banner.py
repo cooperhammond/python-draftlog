@@ -1,23 +1,22 @@
-from draftlog.draft import Draft
+from draftlog.draft import *
+import time
+draft, exit = inject_draftlog()
 
 class Banner:
-    def __init__(self, text):
-        self.text = text
-        self.shift = 0
-        self.status = True
+    def __init__(self, string):
+        self.string = string
+        self.counter = 0
     def interval(self):
-        self.shift += 1
-        if self.shift >= 25:
-            self.status = False
-        self.text = self.text[1:] + self.text[0]
-        return self.text
+        if self.counter >= 100:
+            exit()
+        self.counter += 1
+        self.string = self.string[1:] + self.string[0]
+        return self.string
 
-string = "  Wow! Banners!     This is so cool!     All in 15 lines with `draftlog`!   "
+string = "  Wow! Banners!     This is so cool!     All with draftlog!   "
 
-d = Draft()
+print ("*" * len(string))
+banner = draft.log()
+print ("*" * len(string))
 
-d.add_text("*" * len(string))
-d.add_interval(Banner(string), 0.2)
-d.add_text("*" * len(string))
-
-d.start()
+banner.set_update(Banner(string).interval, 0.1)

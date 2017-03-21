@@ -1,5 +1,12 @@
 # -*- coding: UTF-8 -*-
 
+"""
+Please note that this is not actually part of the module "draftlog." It is just
+something cool I wrote and wanted to include.
+"""
+
+
+
 from colorconsole.terminal import get_terminal
 import time
 import sys
