@@ -1,8 +1,8 @@
 # -*- coding: UTF-8 -*-
-from draftlog.draft import *
+import draftlog
 from random import randrange
 
-draft, exit = inject_draftlog()
+draft = draftlog.inject()
 
 def install_progress(package, step, finished=False):
     spaces = " " * (15 - len(package))
@@ -34,7 +34,7 @@ class MockInstall:
     def interval(self):
         self.count += 1
         if self.status == False:
-            exit()
+            raise draftlog.IntervalQuit
         if self.count >= self.wait:
             if self.step > len(self.steps) - 2:
                 self.status = False
@@ -48,9 +48,12 @@ class MockInstall:
 packages = ["irs", "bobloblaw", "youtube-dl", "truffleHog", "numpy", "scipy"]
 load = Loader("Installing Packages")
 
-draft.log().set_update(load.interval, 0.03, daemon=True)
+load_draft = draft.log()
+
+load_draft.set_interval(load.interval, 0.03, daemon=True)
+
 for i, package in enumerate(packages):
-    draft.log().set_update(
+    draft.log().set_interval(
         MockInstall(package, wait=i).interval,
         round(float(randrange(25, 150) / 100.0), 1)
     )

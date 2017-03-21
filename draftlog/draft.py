@@ -1,82 +1,58 @@
-import sys, time
-import threading
+import ansi
+import intervals
+import sys
 
-esc =        '\x1b['
-clearline =  esc + '2K' + esc + '1G'
+class LogDraft:
+    def __init__(self):
+        self.stream = sys.stdout
+        self.valid = True
+        self.save_line()
 
-def up(n=1):
-    sys.stdout.write(esc + str(n) + 'A')
+    def __call__(self, text):
+        self.update(text)
 
-def down(n=1):
-    sys.stdout.write(esc + str(n) + 'B')
-
-class Interval(threading.Thread):
-    def __init__(self, line_marker, function, time, daemon, suffix=""):
-        super(Interval, self).__init__()
-        self.setDaemon(daemon)
-
-        self.line_marker = line_marker
-        self.function = function
-        self.time = time
-        self.suffix = suffix
-    def run(self):
-        while True:
-            self.line_marker.update(self.function())
-            time.sleep(self.time)
-
-class Looper(threading.Thread):
-    def __init__(self, function, time, daemon):
-        super(Looper, self).__init__()
-        self.setDaemon(daemon)
-
-        self.function = function
-        self.time = time
-    def run(self):
-        while True:
-            sys.stdout.write(self.function())
-            sys.stdout.flush()
-            time.sleep(self.time)
-
-class LineMarker:
-    def __init__(self, lines):
-        self._lines = lines - 1
-    def lines(self):
-        return sys.stdout.lines - self._lines
     def update(self, text):
-        up(self.lines())
-        sys.stdout.write(clearline + text)
-        down(self.lines())
-        sys.stdout.write(clearline)
-        sys.stdout.flush()
-    def set_update(self, function, time, daemon=False):
-        # Note that if daemon is set to True, the program will end when the
-        # mainloop ends, and will not otherwise until sys.exit is called
-        sys.stdout.threads += 1
-        Interval(self, function, time, daemon=daemon).start()
-    def loop(self, function, time, daemon=False):
-        sys.stdout.threads += 1
-        Looper(function, time, daemon=daemon).start()
+        lines_up = self.lines_up()
 
+        if self.off_screen(): # Check if offscreen, if so, don't update the line.
+            self.valid = False
+            return
 
-class LineCountStream(object):
-    def __init__(self, lines=0):
-        self.stdout = sys.stdout
-        self.lines  = lines
-        self.logs   = 1
-        self.threads = 0
-        print ("")
+        # Stop counting lines
+        self.stream.editing = False
 
-    def write(self, s):
-        self.lines += s.count("\n")
-        self.stdout.write("%s" % s)
-    def flush(self):
-        self.stdout.flush()
+        # Move cursor up
+        self.stream.write(ansi.up(lines_up))
 
-    def log(self):
-        self.logs += 1
-        print ("")
-        return LineMarker(self.lines)
+        # Clear the line
+        self.stream.write(ansi.clearline)
 
-def inject_draftlog():
-    sys.stdout = LineCountStream()
-    return sys.stdout, sys.exit
+        # Write the line
+        self.write(text)
+
+        # Flush the data
+        self.stream.flush()
+
+        # Restore cursor position
+        self.stream.write(ansi.down(lines_up))
+
+        # Resume counting lines
+        self.stream.editing = True
+
+    def set_interval(self, func, sec, daemon=False):
+        t = intervals.Timer(self, func, sec, daemon=daemon)
+        t.start()
+        return t
+
+    def write(self, text):
+        if self.valid:
+            self.stream.write(text)
+
+    def off_screen(self):
+        return self.stream.rows <= self.lines_up()
+
+    def lines_up(self):
+        return self.stream.line - self.line
+
+    def save_line(self, relative=0):
+        self.line = self.stream.line + relative
