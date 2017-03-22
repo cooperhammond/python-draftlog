@@ -26,7 +26,7 @@ class Loader:
 class MockInstall:
     def __init__(self, package, wait=0):
         self.package = package
-        self.steps = "gathering dependencies  downloading dependencies  compiling code  cleaning up".split("  ")
+        self.steps = "gathering dependencies  downloading dependencies  compiling code  cleaning up  Installed".split("  ")
         self.step = 0
         self.count = 0
         self.wait = wait
@@ -34,11 +34,11 @@ class MockInstall:
     def interval(self):
         self.count += 1
         if self.status == False:
-            raise draftlog.IntervalQuit
+            raise draftlog.Exception
         if self.count >= self.wait:
             if self.step > len(self.steps) - 2:
                 self.status = False
-                return install_progress(self.package, self.steps[self.step], finished=True)
+                return install_progress(self.package, self.steps[self.step])
             self.step += 1
             return install_progress(self.package, self.steps[self.step])
         else:
@@ -50,7 +50,7 @@ load = Loader("Installing Packages")
 
 load_draft = draft.log()
 
-load_draft.set_interval(load.interval, 0.05, daemon=True)
+load_draft.set_interval(load.interval, 0.05, loader=True)
 
 for i, package in enumerate(packages):
     pack = draft.log()
@@ -58,3 +58,5 @@ for i, package in enumerate(packages):
         MockInstall(package, wait=i).interval,
         round(float(randrange(25, 150) / 100.0), 1)
     )
+
+draft.start()

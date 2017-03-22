@@ -1,11 +1,13 @@
-from .draft import LogDraft
+from .logdraft import LogDraft
+from .drafter import Drafter
 import os
 import sys
 
 class LineCountStream(object):
     def __init__(self):
+        self.data = ""
         self.stdout = sys.stdout
-        self.line = 1
+        self.lines = 1
         self.logs = 0
         self.editing = False
         try:
@@ -18,14 +20,10 @@ class LineCountStream(object):
             self.count_lines(data)
         self.stdout.write(data)
 
-    def log(self, text=""):
-        r = LogDraft()
-        print (text)
-        return r
-
     def flush(self):
         self.stdout.flush()
 
     def count_lines(self, data):
         datalines = len(str(data).split("\n")) - 1
-        self.line += datalines
+        self.lines += datalines
+        self.data += data

@@ -1,10 +1,10 @@
 import ansi
-import intervals
 import sys
 
 class LogDraft:
-    def __init__(self):
+    def __init__(self, drafter):
         self.stream = sys.stdout
+        self.drafter = drafter
         self.valid = True
         self.save_line()
 
@@ -17,9 +17,6 @@ class LogDraft:
         if self.off_screen(): # Check if offscreen, if so, don't update the line.
             self.valid = False
             return
-
-        # Stop counting lines
-        self.stream.editing = False
 
         # Move cursor up
         self.stream.write(ansi.up(lines_up))
@@ -36,13 +33,9 @@ class LogDraft:
         # Restore cursor position
         self.stream.write(ansi.down(lines_up))
 
-        # Resume counting lines
-        self.stream.editing = True
 
-    def set_interval(self, func, sec, daemon=False):
-        t = intervals.Timer(self, func, sec, daemon=daemon)
-        t.start()
-        return t
+    def set_interval(self, func, sec, **args):
+        self.drafter.add_interval(self, func, sec, **args)
 
     def write(self, text):
         if self.valid:
@@ -52,7 +45,7 @@ class LogDraft:
         return self.stream.rows <= self.lines_up()
 
     def lines_up(self):
-        return self.stream.line - self.line
+        return self.stream.lines - self.line
 
     def save_line(self, relative=0):
-        self.line = self.stream.line + relative
+        self.line = self.stream.lines + relative

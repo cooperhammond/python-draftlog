@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
-from draftlog.draft import *
-draft, exit = inject_draftlog()
+import draftlog
+
+draft = draftlog.inject()
 
 class Loader:
     def __init__(self, text):
@@ -21,13 +22,15 @@ class Stepper:
     def interval(self):
         self.step += 1
         if self.step >= len(self.steps) - 1:
-            exit()
-        return (" > " + self.steps[self.step] + "\n")
+            raise draftlog.Exception
+        return (" > " + self.steps[self.step])
 
 
 steps = ['Doing that', 'Then that', 'And after that', 'We will finish', 'In', '3', '2', '1', '0']
 stepper = Stepper(steps)
 loader = Loader("Generic Loading")
 
-draft.log().set_update(loader.interval, 0.03, daemon=True)
-step = draft.log().loop(stepper.interval, 1)
+draft.log().set_interval(loader.interval, 0.03, loader=True)
+step = draft.log().set_interval(stepper.interval, 1, update=False)
+
+draft.start()

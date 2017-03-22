@@ -1,10 +1,11 @@
 from .lcs import LineCountStream
+from .drafter import Drafter
 import sys
 
 def inject():
     print ("")
     sys.stdout = LineCountStream()
-    return sys.stdout
+    return Drafter()
 
-class IntervalQuit(Exception):
+class Exception(Exception):
     pass

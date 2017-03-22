@@ -8,7 +8,7 @@ class Banner:
         self.counter = 0
     def scroll(self):
         if self.counter >= 50:
-            raise draftlog.IntervalQuit
+            raise draftlog.Exception
         self.counter += 1
         self.string = self.string[1:] + self.string[0]
         return self.string
@@ -20,3 +20,5 @@ banner = draft.log()
 print ("*" * len(string))
 
 banner.set_interval(Banner(string).scroll, 0.1)
+
+draft.start()
