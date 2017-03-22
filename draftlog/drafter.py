@@ -4,8 +4,16 @@ import time
 import sys
 import ansi
 
-class Drafter:
+if sys.version_info[0] <= 2:
+    import Queue as queue
+else:
+    import queue
+
+class DaemonDrafter(threading.Thread):
     def __init__(self):
+        super(DaemonDrafter, self).__init__()
+        self.queue = queue.Queue()
+
         self.lcs = sys.stdout
         self.intervals = []
         self.counter = -1
@@ -73,7 +81,7 @@ class Drafter:
     def check_done(self):
         return all(x["status"] in (False, None) for x in self.intervals)
 
-    def start(self):
+    def run(self):
         self.sort_intervals()
         lines = 0
         while self.check_done() == False:
@@ -81,3 +89,15 @@ class Drafter:
             self.run_intervals()
             time.sleep(self.time_interval)
         self.lcs.write(ansi.clearline)
+        sys.exit()
+
+class Drafter:
+    def __init__(self):
+        self.daemon_drafter = DaemonDrafter()
+
+    def log(self):
+        logdraft = self.daemon_drafter.log
+        return logdraft
+
+    def add_interval(self, *args, **kwargs):
+        self.daemon_drafter(*args, **kwargs)
