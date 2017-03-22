@@ -20,50 +20,37 @@ $ pip install draftlog
 ```
 
 ## Intro Example
-Here's an average unexciting example of `draftlog`, if you want some more exciting ones, check out the [`examples`](https://github.com/kepoorhampond/python-draftlog/tree/master/examples) folder!
+Here's a simple banner made with `draftlog`. If you want to see some more examples, check out the  [`examples`](https://github.com/kepoorhampond/python-draftlog/tree/master/examples) folder!
 ```python
-# -*- coding: UTF-8 -*-
-# Import the module
-from draftlog.draft import Draft
+import draftlog
 
-# Make a loader interval class:
-class Loader:
-    def __init__(self, text):
-        self.frames = "⢄ ⢂ ⢁ ⡁ ⡈ ⡐ ⡠".split(" ")
-        self.frame = -1
-        self.text = text
-    def interval(self):
-        if self.frame > len(self.frames) - 2:
-            self.frame = -1
-        self.frame += 1
-        return ("{0} " + self.text + " {0}").format(self.frames[self.frame])
+draft = draftlog.inject()
 
-# Make an interval class
-class Clock:
-    def __init__(self, timeout):
-        self.timeout = timeout
-        self.status = True # essential variable `status`
-        self.time = 0
-    def interval(self): # and the `interval` function.
-        self.time += 1
-        if self.time >= self.timeout:
-            self.status = False
-        return (" " * 6) + str(self.time)
+class Banner:
+    def __init__(self, string):
+        self.string = string
+        self.counter = 0
+    def scroll(self):
+        if self.counter >= 50:
+            raise draftlog.Exception
+        self.counter += 1
+        self.string = self.string[1:] + self.string[0]
+        return self.string
 
-# Initialize the draft
-d = Draft()
-# Add the loader
-d.add_loader(Loader("Tick Tock"), 0.05)
-# Add the interval clock
-d.add_interval(Clock(10), 1)
-# Start it!
-d.start()
+string = "  Wow! Banners!     This is so cool!     All with draftlog!   "
+
+print ("*" * len(string))
+banner = draft.log()
+print ("*" * len(string))
+
+banner.set_interval(Banner(string).scroll, 0.1)
+
+draft.start()
 ```
+Please note that you can specify the arguments `loader` and `update`. If `loader` is set to `True`, then when the interval ends depends on the other intervals. If `update` is set to `False`, then rather than updating the `draft.log()` line, it will append on the new lines after it with each update.
 
 ## How does it do like it does?
-It generates frames based off of the `intervals` you add and overwrites them on a generated time basis with ANSI escape codes! Since it's very open, you can make practically anything with it! In the [`examples`](https://github.com/kepoorhampond/python-draftlog/tree/master/examples) folder I've already made a banner, a multi-line progress bar, and more!
-
-For a more in-depth view of the module, look to the [wiki](https://github.com/kepoorhampond/python-draftlog/wiki).
+It generates timings based off of the `intervals` you add and overwrites the `draft.log()` lines with ANSI escape codes! Since it's very open-ended, you can make practically anything with it! In the [`examples`](https://github.com/kepoorhampond/python-draftlog/tree/master/examples) folder I've already made a sample install, a multi-line progress bar, and more!
 
 ## Have questions?
 If you still have questions or need some help, email me at `kepoorh@gmail.com`, all feedback is appreciated!
