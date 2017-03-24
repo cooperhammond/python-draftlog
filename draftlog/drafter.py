@@ -3,20 +3,42 @@ import draftlog
 import time
 import sys
 import ansi
+import threading
 
-class Drafter:
+# Imports the correct module according to
+# Python version.
+if sys.version_info[0] <= 2:
+    import Queue as queue
+else:
+    import queue
+
+"""
+A background process to coordinate all the intervals
+with their correct times rather than having clashing
+multiple threads.
+"""
+class DaemonDrafter(threading.Thread):
     def __init__(self):
+        super(DaemonDrafter, self).__init__()
+
         self.lcs = sys.stdout
         self.intervals = []
         self.counter = -1
         self.time_interval = 0
 
-    def log(self):
+    # Returns a "LogDraft" object on the correct line
+    def log(self, text="\n"):
         logdraft = LogDraft(self)
-        self.lcs.write(ansi.save)
-        print ("")
+        self.lcs.write(text)
         return logdraft
 
+    """
+    What actually adds the interval.
+    "Loader" specifies if the interval should
+    affect when the draft actually exits.
+    "Update" defines whether to overwrite the LogDraft
+    line, or to add a new line afterwards.
+    """
     def add_interval(self, logdraft, func, seconds, loader=False, update=True):
         if loader != None:
             loader = not loader
@@ -30,7 +52,9 @@ class Drafter:
             "update"  :  update,
             "status"  :  loader,
         })
+        self.sort_intervals()
 
+    # Generates correct timing for intervals
     def sort_intervals(self):
         smallest = lambda x: x["time"]
         sort = sorted(self.intervals, key=smallest)
@@ -40,6 +64,7 @@ class Drafter:
             interval["increment_on"] = int(round(interval["time"] / self.time_interval))
             interval["backup"] = "" # This is an important thing to change/remember
 
+    # Parses interval output according to its statuses
     def parse_interval_output(self, interval):
         try:
             if self.counter % interval["increment_on"] == 0:
@@ -54,8 +79,8 @@ class Drafter:
 
         return str(output)
 
+    # What actually updates the LogDraft lines.
     def run_intervals(self):
-        #frame = []
         for interval in self.intervals:
             text = self.parse_interval_output(interval)
             if interval["update"] == True:
@@ -68,16 +93,33 @@ class Drafter:
                     else:
                         self.lcs.write(ansi.clearline)
                         print (text)
-        #return "\n".join(frame)
 
+    # Checks if all intervals are done.
     def check_done(self):
         return all(x["status"] in (False, None) for x in self.intervals)
 
-    def start(self):
-        self.sort_intervals()
+    # The actual running loop for updating intervals.
+    def run(self):
         lines = 0
         while self.check_done() == False:
             self.counter += 1
             self.run_intervals()
             time.sleep(self.time_interval)
         self.lcs.write(ansi.clearline)
+        sys.exit()
+
+"""
+Pretty much just a wrapper for "DaemonDrafter".
+It's what the user actually interacts with and what
+"draftlog.inject()" returns.
+"""
+class Drafter:
+    def __init__(self):
+        self.daemon_drafter = DaemonDrafter()
+
+    def log(self, *args, **kwargs):
+        logdraft = self.daemon_drafter.log(*args, **kwargs)
+        return logdraft
+
+    def start(self):
+        self.daemon_drafter.start()
