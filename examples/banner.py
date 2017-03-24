@@ -7,7 +7,7 @@ class Banner:
         self.string = string
         self.counter = 0
     def scroll(self):
-        if self.counter >= 50:
+        if self.counter >= 60:
             raise draftlog.Exception
         self.counter += 1
         self.string = self.string[1:] + self.string[0]

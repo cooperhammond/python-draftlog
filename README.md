@@ -10,7 +10,7 @@
 
 A module useful for CLI's, logs and pretty much any cool multi-line python tool.
 
-All inspiration goes to [Ivan Seidel](https://github.com/ivanseidel) with [`node-draftlog`](https://github.com/ivanseidel/node-draftlog).
+All inspiration goes to [Ivan Seidel](https://github.com/ivanseidel) with [`node-draftlog`](https://github.com/ivanseidel/node-draftlog) (also a lot of the documentation is his too).
 
 Works with Python 2 and 3.
 
@@ -32,6 +32,8 @@ class Banner:
         self.counter = 0
     def scroll(self):
         if self.counter >= 50:
+            # This is what exits out of the loop in:
+            # "draft.log().set_interval"
             raise draftlog.Exception
         self.counter += 1
         self.string = self.string[1:] + self.string[0]
@@ -46,11 +48,15 @@ print ("*" * len(string))
 banner.set_interval(Banner(string).scroll, 0.1)
 
 draft.start()
-```
-Please note that you can specify the arguments `loader` and `update`. If `loader` is set to `True`, then when the interval ends depends on the other intervals. If `update` is set to `False`, then rather than updating the `draft.log()` line, it will append on the new lines after it with each update.
 
-## How does it do like it does?
+# You can still print stuff after starting the draft as well:
+import time
+time.sleep(2)
+print ("Wow, some more text!")
+```
+
+## How
 It generates timings based off of the `intervals` you add and overwrites the `draft.log()` lines with ANSI escape codes! Since it's very open-ended, you can make practically anything with it! In the [`examples`](https://github.com/kepoorhampond/python-draftlog/tree/master/examples) folder I've already made a sample install, a multi-line progress bar, and more!
 
-## Have questions?
+## Questions
 If you still have questions or need some help, email me at `kepoorh@gmail.com`, all feedback is appreciated!
