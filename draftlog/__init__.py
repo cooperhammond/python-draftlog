@@ -8,7 +8,6 @@ routed through with "print". It returns the Drafter
 object.
 """
 def inject(): # TODO: Make a thread version and a frame version.
-    print ("")
     sys.stdout = LineCountStream()
     return Drafter()
 

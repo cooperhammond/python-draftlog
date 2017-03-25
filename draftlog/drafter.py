@@ -26,12 +26,6 @@ class DaemonDrafter(threading.Thread):
         self.counter = -1
         self.time_interval = 0
 
-    # Returns a "LogDraft" object on the correct line
-    def log(self, text="\n"):
-        logdraft = LogDraft(self)
-        self.lcs.write(text)
-        return logdraft
-
     """
     What actually adds the interval.
     "Loader" specifies if the interval should
@@ -116,9 +110,12 @@ It's what the user actually interacts with and what
 class Drafter:
     def __init__(self):
         self.daemon_drafter = DaemonDrafter()
+        self.lcs = self.daemon_drafter.lcs
 
-    def log(self, *args, **kwargs):
-        logdraft = self.daemon_drafter.log(*args, **kwargs)
+    # Returns a "LogDraft" object on the correct line
+    def log(self, text="\n"):
+        logdraft = LogDraft(self.daemon_drafter)
+        self.lcs.write(text)
         return logdraft
 
     def start(self):
