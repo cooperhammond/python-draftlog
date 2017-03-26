@@ -20,7 +20,23 @@ $ pip install draftlog
 ```
 
 ## Intro Example
-Here's a simple banner made with `draftlog`. If you want to see some more examples, check out the  [`examples`](https://github.com/kepoorhampond/python-draftlog/tree/master/examples) folder!
+Here's about the simplest program with `draftlog` that actually does something:
+```python
+import draftlog
+import time
+
+draft = draftlog.inject()
+
+print ("The line below me will be updated!")
+update_me = draft.log("I will be updated!")
+print ("The line above me will be updated!")
+
+time.sleep(3)
+
+update_me.update("I've been updated!")
+```
+
+Here's a more complicated program: a scrolling banner . If you want to see some more examples in this thread, check out the  [`examples`](https://github.com/kepoorhampond/python-draftlog/tree/master/examples) folder!
 ```python
 import draftlog
 
@@ -55,8 +71,14 @@ time.sleep(2)
 print ("Wow, some more text!")
 ```
 
-## How
-It generates timings based off of the `intervals` you add and overwrites the `draft.log()` lines with ANSI escape codes! Since it's very open-ended, you can make practically anything with it! In the [`examples`](https://github.com/kepoorhampond/python-draftlog/tree/master/examples) folder I've already made a sample install, a multi-line progress bar, and more!
+`set_interval` is a function that takes another function and the time to wait. It overwrites the `draft.log()` line with whatever the function returns. The function will stop being called once it `raises draftlog.Exception`. `draft.start()` will actually start all intervals that have been set.
+
+### How
+`draft.log()` creates a `DraftLog` object that keeps track of what line it was created on. You can call `update(text)` on it to update the line that it's set on.
+
+`draft.log().set_interval(function, time)` primes an interval in a background threading process called `DaemonDrafter`. When `draft.start()` is called, it generates interval timing based off of the time specified and then runs it in "frames."
+
+Since I've made the program open-ended, you can create a lot (see the [`examples`](https://github.com/kepoorhampond/python-draftlog/tree/master/examples) folder) of stuff.
 
 ## Questions
-If you still have questions or need some help, email me at `kepoorh@gmail.com`, all feedback is appreciated!
+If you still have questions or need some help, check out the [wiki](https://github.com/kepoorhampond/python-draftlog/wiki/) or email me at `kepoorh@gmail.com`, all feedback is appreciated!
