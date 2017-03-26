@@ -11,13 +11,15 @@ class Banner:
             raise draftlog.Exception
         self.counter += 1
         self.string = self.string[1:] + self.string[0]
-        return self.string
+        return draftlog.ansi.YELLOW + self.string + draftlog.ansi.END
 
 string = "  Wow! Banners!     This is so cool!     All with draftlog!   "
 
+print ("\n")
 print ("*" * len(string))
 banner = draft.log()
 print ("*" * len(string))
+print ("\n")
 
 banner.set_interval(Banner(string).scroll, 0.1)
 

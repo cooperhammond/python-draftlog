@@ -25,15 +25,15 @@ class DaemonDrafter(threading.Thread):
         self.intervals = []
         self.counter = -1
         self.time_interval = 0
+        self.end = False
 
     """
     What actually adds the interval.
     "Loader" specifies if the interval should
     affect when the draft actually exits.
-    "Update" defines whether to overwrite the LogDraft
     line, or to add a new line afterwards.
     """
-    def add_interval(self, logdraft, func, seconds, loader=False, update=True):
+    def add_interval(self, logdraft, func, seconds, loader=False):
         if loader != None:
             loader = not loader
 
@@ -42,8 +42,6 @@ class DaemonDrafter(threading.Thread):
             "logdraft":  logdraft,
             "time"    :  seconds,
             "backup"  :  "",
-            "backup1" :  "",
-            "update"  :  update,
             "status"  :  loader,
         })
         self.sort_intervals()
@@ -63,8 +61,7 @@ class DaemonDrafter(threading.Thread):
         try:
             if self.counter % interval["increment_on"] == 0:
                 output = interval["function"]()
-                interval["backup"] = interval["backup1"]
-                interval["backup1"] = output
+                interval["backup"] = output
             else:
                 output = interval["backup"]
         except draftlog.Exception:
@@ -77,16 +74,7 @@ class DaemonDrafter(threading.Thread):
     def run_intervals(self):
         for interval in self.intervals:
             text = self.parse_interval_output(interval)
-            if interval["update"] == True:
-                interval["logdraft"].update(text)
-            else:
-                if text != interval["backup"] and text != "":
-                    if interval.get("overwritten_init_line") != True:
-                        interval["logdraft"].update(text)
-                        interval["overwritten_init_line"] = True
-                    else:
-                        self.lcs.write(ansi.clearline)
-                        print (text)
+            interval["logdraft"].update(text)
 
     # Checks if all intervals are done.
     def check_done(self):
@@ -95,12 +83,15 @@ class DaemonDrafter(threading.Thread):
     # The actual running loop for updating intervals.
     def run(self):
         lines = 0
-        while self.check_done() == False:
+        while self.check_done() == False and self.end == False:
             self.counter += 1
             self.run_intervals()
             time.sleep(self.time_interval)
         self.lcs.write(ansi.clearline)
         sys.exit()
+
+    def stop(self):
+        self.end = True
 
 """
 Pretty much just a wrapper for "DaemonDrafter".
@@ -121,3 +112,6 @@ class Drafter:
 
     def start(self):
         self.daemon_drafter.start()
+
+    def stop(self):
+        self.daemon_drafter.stop()

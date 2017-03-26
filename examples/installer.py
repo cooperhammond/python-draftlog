@@ -1,15 +1,16 @@
 # -*- coding: UTF-8 -*-
 import draftlog
 from random import randrange
+from draftlog.ansi import * # For colors
 
 draft = draftlog.inject()
 
 def install_progress(package, step, finished=False):
     spaces = " " * (15 - len(package))
     if finished:
-        return " > " + package + spaces + "Installed"
+        return DIM + BBLUE + " > " + BYELLOW + package + spaces + BGREEN + "Installed" + END
     else:
-        return " > " + package + spaces + step
+        return BBLUE + " > " + BYELLOW + package + spaces + BLUE + step + END
 
 class Loader:
     def __init__(self, text, status=True):
@@ -21,12 +22,12 @@ class Loader:
         if self.frame > len(self.frames) - 2:
             self.frame = -1
         self.frame += 1
-        return ("{0} " + self.text + " {0}").format(self.frames[self.frame])
+        return (BCYAN + "{0} " + YELLOW + self.text + BCYAN + " {0}" + END).format(self.frames[self.frame])
 
 class MockInstall:
     def __init__(self, package, wait=0):
         self.package = package
-        self.steps = "gathering dependencies  downloading dependencies  compiling code  cleaning up  Installed".split("  ")
+        self.steps = "gathering dependencies  downloading dependencies  compiling code  cleaning up".split("  ")
         self.step = 0
         self.count = 0
         self.wait = wait
@@ -38,7 +39,7 @@ class MockInstall:
         if self.count >= self.wait:
             if self.step > len(self.steps) - 2:
                 self.status = False
-                return install_progress(self.package, self.steps[self.step])
+                return install_progress(self.package, self.steps[self.step], finished=True)
             self.step += 1
             return install_progress(self.package, self.steps[self.step])
         else:

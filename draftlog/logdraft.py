@@ -39,6 +39,9 @@ class LogDraft:
         # Restore cursor position
         self.stream.write(ansi.down(lines_up))
 
+        # Move cursor to the beginning of the line
+        self.stream.write("\r")
+
 
     # What the user gets when they call "draft.log().set_interval(**args**)"
     def set_interval(self, func, sec, **args):

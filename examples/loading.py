@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 import draftlog
+import time
+from draftlog.ansi import * # For colors
 
 draft = draftlog.inject()
 
@@ -12,7 +14,7 @@ class Loader:
         self.frame += 1
         if self.frame > len(self.frames) - 2:
             self.frame = -1
-        return ("{0} " + self.text + " {0}").format(self.frames[self.frame])
+        return (CYAN + "{0} " + BYELLOW + self.text + END + CYAN + " {0}" + END).format(self.frames[self.frame])
 
 class Stepper:
     def __init__(self, steps):
@@ -23,14 +25,21 @@ class Stepper:
         self.step += 1
         if self.step >= len(self.steps) - 1:
             raise draftlog.Exception
-        return (" > " + self.steps[self.step])
+        return (" > " + CYAN + self.steps[self.step] + END)
 
 
 steps = ['Doing that', 'Then that', 'And after that', 'We will finish', 'In', '3', '2', '1', '0']
 stepper = Stepper(steps)
 loader = Loader("Generic Loading")
 
-draft.log().set_interval(loader.interval, 0.03, loader=True)
-step = draft.log().set_interval(stepper.interval, 1, update=False)
-
+draft.log().set_interval(loader.interval, 0.05)
 draft.start()
+
+while True:
+    try:
+        time.sleep(1)
+        print (stepper.interval())
+    except draftlog.Exception:
+        break
+
+draft.stop()

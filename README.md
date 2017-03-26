@@ -1,7 +1,7 @@
 # Draftlog
 > :scroll: Fancy logs with expandable tools. Bring life to your terminal!
 
-[![demo](http://i.imgur.com/nMqj7Rr.gif)](http://i.imgur.com/nMqj7Rr.gif)
+[![demo](http://i.imgur.com/rWE21Ts.gif)](http://i.imgur.com/rWE21Ts.gif)
 
 [![License: MIT](https://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://mit-license.org/)
 [![Build Status](https://img.shields.io/travis/kepoorhampond/python-draftlog/master.svg?style=flat-square)](https://travis-ci.org/kepoorhampond/python-draftlog)
