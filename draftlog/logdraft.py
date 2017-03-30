@@ -42,6 +42,9 @@ class LogDraft:
         # Move cursor to the beginning of the line
         self.stream.write("\r")
 
+        # Save the current text
+        self.text = text
+
 
     # What the user gets when they call "draft.log().set_interval(**args**)"
     def set_interval(self, func, sec, **args):
