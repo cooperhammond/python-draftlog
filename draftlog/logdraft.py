@@ -66,3 +66,6 @@ class LogDraft:
     # Sets the line to be monitored.
     def save_line(self, relative=0):
         self.line = self.stream.lines + relative
+
+    def current_text(self):
+        return self.text
