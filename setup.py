@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name =         'draftlog',
-    version =      '2.0.5',
+    version =      '2.0.6',
     description =  'Create updatable log lines into the terminal.',
     url =          'https://github.com/kepoorhampond/python-draftlog',
     author =       'Kepoor Hampond',

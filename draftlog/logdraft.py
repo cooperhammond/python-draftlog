@@ -15,6 +15,7 @@ class LogDraft:
     # For if someone wants to call "LogDraft()('update text')"
     def __call__(self, text):
         self.update(text)
+        self.text = text
 
     # Updates the line that "LogDraft" was created on
     def update(self, text):
