@@ -106,8 +106,7 @@ class Drafter:
     # Returns a "LogDraft" object on the correct line
     def log(self, text="\n"):
         if text != "\n": text = text + "\n"
-        logdraft = LogDraft(self.daemon_drafter)
-        self.lcs.write(text)
+        logdraft = LogDraft(self.daemon_drafter, text=text)
         return logdraft
 
     def start(self):

@@ -6,16 +6,17 @@ A single line object that saves its relative position
 in the terminal. It's responsible for updating itself.
 """
 class LogDraft:
-    def __init__(self, drafter):
+    def __init__(self, drafter, text="\n"):
         self.stream = sys.stdout
         self.drafter = drafter
         self.valid = True
+        self.text = text
         self.save_line()
+        self.stream.write(self.text)
 
     # For if someone wants to call "LogDraft()('update text')"
     def __call__(self, text):
         self.update(text)
-        self.text = text
 
     # Updates the line that "LogDraft" was created on
     def update(self, text):
@@ -69,4 +70,4 @@ class LogDraft:
         self.line = self.stream.lines + relative
 
     def current_text(self):
-        return self.text
+        return self.text.strip("\n")
