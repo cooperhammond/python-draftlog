@@ -1,4 +1,4 @@
-import ansi
+from . import ansi
 import sys
 
 """
