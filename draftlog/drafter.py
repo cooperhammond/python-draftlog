@@ -1,8 +1,8 @@
 from .logdraft import LogDraft
+from . import ansi
 import draftlog
 import time
 import sys
-import ansi
 import threading
 
 # Imports the correct module according to
