@@ -41,5 +41,7 @@ while True:
         print (stepper.interval())
     except draftlog.Exception:
         break
+    except KeyboardInterrupt:
+        pass
 
 draft.stop()

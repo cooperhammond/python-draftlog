@@ -1,5 +1,5 @@
-from .lcs import LineCountStream
-from .drafter import Drafter
+from draftlog.lcs import LineCountStream
+from draftlog.drafter import Drafter
 import sys
 
 """

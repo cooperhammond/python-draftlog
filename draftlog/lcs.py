@@ -1,8 +1,8 @@
 """
 LCS: Line Count Stream
 """
-from .logdraft import LogDraft
-from .drafter import Drafter
+from draftlog.logdraft import LogDraft
+from draftlog.drafter import Drafter
 import os
 import sys
 
