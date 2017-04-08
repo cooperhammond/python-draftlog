@@ -3,13 +3,9 @@ python:
   - "2.7"
   - "3.5"
 
-install:
-  - pip install coveralls # For coveralls.io
-  - pip install nose
-
 script:
   - python setup.py install
-  - python examples/test_all.py
-
-after_success:
-  - coveralls
+  - python examples/banner.py
+  - python examples/installer.py
+  - python examples/loading.py
+  - python examples/progress.py
