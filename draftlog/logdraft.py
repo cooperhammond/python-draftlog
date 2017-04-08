@@ -1,4 +1,4 @@
-from . import ansi
+from draftlog import ansi
 import sys
 
 """
@@ -59,7 +59,7 @@ class LogDraft:
 
     # Checks if the line being monitored is off screen.
     def off_screen(self):
-        return self.lines_up() >= self.stream.rows
+        return int(self.lines_up()) >= int(self.stream.rows)
 
     # Counts how many lines up until the correct line.
     def lines_up(self):

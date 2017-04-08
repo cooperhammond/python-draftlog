@@ -1,5 +1,5 @@
-from .logdraft import LogDraft
-from . import ansi
+from draftlog.logdraft import LogDraft
+from draftlog import ansi
 import draftlog
 import time
 import sys
