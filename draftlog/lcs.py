@@ -22,7 +22,7 @@ class LineCountStream(object):
         # Reads the command "tput lines" if valid
         try:
             self.rows = subprocess.Popen("tput lines").read()
-        except (ValueError, IOError):
+        except (ValueError, IOError, OSError):
             self.rows = 20
 
     """
