@@ -4,6 +4,7 @@ LCS: Line Count Stream
 from draftlog.logdraft import LogDraft
 from draftlog.drafter import Drafter
 import os
+import subprocess
 import sys
 
 """
@@ -20,8 +21,8 @@ class LineCountStream(object):
 
         # Reads the command "tput lines" if valid
         try:
-            self.rows = os.popen("tput lines").read()
-        except ValueError:
+            self.rows = subprocess.Popen("tput lines").read()
+        except (ValueError, FileNotFoundError):
             self.rows = 20
 
     """
