@@ -7,9 +7,9 @@ draft = draftlog.inject()
 def progress_bar(progress):
     if progress >= 100:
         progress = 100
-        units = progress / 2
+        units = int(progress / 2)
         return ("[{0}{1}] " + GREEN + "{2}%" + END).format(BBLUE + "#" * units + END, "-" * (50 - units), progress)
-    units = progress / 2
+    units = int(progress / 2)
     return ("[{0}{1}] " + YELLOW + "{2}%" + END).format(BBLUE + "#" * units + END, "-" * (50 - units), progress)
 
 class Download:
