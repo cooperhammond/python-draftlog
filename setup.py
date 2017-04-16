@@ -10,6 +10,6 @@ setup(
     license =      'MIT',
     packages =     ['draftlog'],
     install_requires= [
-        # Notice that there is nothing here. :D-|-<
+        'colorama'  # This package will ensure ANSI support for windows cmd
     ],
 )
